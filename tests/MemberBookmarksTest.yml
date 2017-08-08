@@ -1,0 +1,56 @@
+Group:
+  Group1:
+    Title: Group one
+  Group2:
+    Title: Group two
+  Group3:
+    Title: Group three
+
+Page:
+  Page1:
+    Title: Page one
+  Page2:
+    Title: Page two
+    ParentID: =>Page.Page1
+  Page3:
+    Title: Page three
+    ParentID: =>Page.Page1
+  Page4:
+    Title: Page four
+
+GlobalBookmark:
+  Bookmark1:
+    Title: Bookmark one
+    Type: SiteTree
+    SiteTreeID: =>Page.Page1
+    ExcludeGroups: =>Group.Group1
+  Bookmark2:
+    Title: Bookmark two
+    Type: SiteTree
+    SiteTreeID: =>Page.Page2
+    ExcludeGroups: =>Group.Group2
+
+BookmarkLink:
+  Link1:
+    Title: Bookmark one
+    Type: SiteTree
+    SiteTreeID: =>Page.Page1
+  Link2:
+    Title: Bookmark two
+    Type: SiteTree
+    SiteTreeID: =>Page.Page2
+  Link3:
+    Title: Bookmark three
+    Type: SiteTree
+    SiteTreeID: =>Page.Page3
+  Link4:
+    Title: Bookmark four
+    Type: SiteTree
+    SiteTreeID: =>Page.Page4
+
+Member:
+  Member1:
+    FirstName: Bookmark member
+    Surname: One
+    Groups: =>Group.Group1
+    Bookmarks: =>BookmarkLink.Link2,=>BookmarkLink.Link3,=>BookmarkLink.Link4

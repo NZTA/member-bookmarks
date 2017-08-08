@@ -1,0 +1,19 @@
+---
+name: 'member-bookmarks'
+---
+
+SiteConfig:
+  extensions:
+    - BookmarksSiteConfigExtension
+
+Member:
+  extensions:
+    - 'BookmarksMemberExtension'
+
+Group:
+  extensions:
+    - BookmarksGroupExtension
+
+Page_Controller:
+  extensions:
+    - BookmarksPageControllerExtension
