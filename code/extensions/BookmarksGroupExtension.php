@@ -1,4 +1,5 @@
 <?php
+use SilverStripe\ORM\DataExtension;
 
 class BookmarksGroupExtension extends DataExtension
 {
@@ -8,5 +9,4 @@ class BookmarksGroupExtension extends DataExtension
     private static $belongs_many_many = [
         'GlobalBookmarks' => 'GlobalBookmark'
     ];
-
 }

@@ -1,4 +1,6 @@
 <?php
+use Sheadawson\Linkable\Models\Link;
+use SilverStripe\Security\Group;
 
 class GlobalBookmark extends Link
 {
@@ -7,7 +9,7 @@ class GlobalBookmark extends Link
      * @var array
      */
     private static $many_many = [
-        'ExcludeGroups' => 'Group'
+        'ExcludeGroups' => Group::class,
     ];
 
     /**

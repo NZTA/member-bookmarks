@@ -1,4 +1,5 @@
 <?php
+use SilverStripe\ORM\DataExtension;
 
 /**
  * This class is responsible for adding Bookmarks specific links to Members.
@@ -30,7 +31,6 @@ class BookmarksMemberExtension extends DataExtension
             $links = $member->Bookmarks();
 
             foreach ($links as $link) {
-
                 $linkType = $link->Type;
 
                 switch ($linkType) {
@@ -62,7 +62,6 @@ class BookmarksMemberExtension extends DataExtension
         $category = [];
 
         if ($siteTree) {
-
             // Check the bookmark link is parent
             if ($siteTree->ParentID == 0) {
                 $categoryKey = $this->getParentSiteTreeKey($siteTree);
@@ -111,7 +110,6 @@ class BookmarksMemberExtension extends DataExtension
     {
         $url = parse_url($link->URL);
         if ($url !== false) {
-
             // Remove first and last '/' characters from url path
             $paths = explode('/', trim($url['path'], '/'));
             if (count($paths) > 0) {
@@ -192,5 +190,4 @@ class BookmarksMemberExtension extends DataExtension
     {
         return $siteTree->Title . '-' . $siteTree->ID;
     }
-
 }

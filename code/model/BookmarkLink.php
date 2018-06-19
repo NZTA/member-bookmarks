@@ -1,4 +1,5 @@
 <?php
+use Sheadawson\Linkable\Models\Link;
 
 class BookmarkLink extends Link
 {
@@ -22,5 +23,4 @@ class BookmarkLink extends Link
 
         return $fields;
     }
-
 }

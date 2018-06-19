@@ -1,4 +1,5 @@
 <?php
+use SilverStripe\ORM\DataExtension;
 
 class BookmarksPageControllerExtension extends DataExtension
 {
@@ -274,5 +275,4 @@ class BookmarksPageControllerExtension extends DataExtension
 
         return $title;
     }
-
 }

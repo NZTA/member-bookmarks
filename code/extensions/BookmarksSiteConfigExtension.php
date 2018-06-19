@@ -1,4 +1,6 @@
 <?php
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\Forms\FieldList;
 
 class BookmarksSiteConfigExtension extends DataExtension
 {

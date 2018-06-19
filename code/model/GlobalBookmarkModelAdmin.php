@@ -1,4 +1,6 @@
 <?php
+use Sheadawson\Linkable\Models\Link;
+use SilverStripe\Admin\ModelAdmin;
 
 class GlobalBookmarkModelAdmin extends ModelAdmin
 {
