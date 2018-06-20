@@ -154,16 +154,18 @@ class BookmarksPageControllerExtension extends DataExtension
         }
 
         $errMsg = "Error in add bookmark - Invalid item ID.";
+        $useMsg = "";
         if (!$member) {
             $errMsg = "Error in add bookmark - not logged in.";
+            $useMsg = "Sorry, you need to login to favourite a page.";
         }
         // log to push to raygun if it gets here
         $this->logger->log(
-            Logger::ERROR,
+            Logger::INFO,
             $errMsg
         );
 
-        return $this->errorResponse();
+        return $this->errorResponse($useMsg);
     }
 
     /**
@@ -171,11 +173,12 @@ class BookmarksPageControllerExtension extends DataExtension
      *
      * @return HTTPResponse
      */
-    private function errorResponse()
+    private function errorResponse($description = "")
     {
         $response = $this->owner->getResponse();
         $response->setStatusCode(403);
         $response->addHeader('Content-Type', 'application/json');
+        $response->setStatusDescription($description);
 
         return $response;
     }
