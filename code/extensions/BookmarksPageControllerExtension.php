@@ -153,10 +153,14 @@ class BookmarksPageControllerExtension extends DataExtension
             );
         }
 
+        $errMsg = "Error in add bookmark - Invalid item ID.";
+        if (!$member) {
+            $errMsg = "Error in add bookmark - not logged in.";
+        }
         // log to push to raygun if it gets here
         $this->logger->log(
             Logger::ERROR,
-            'Error in add bookmark - Invalid  Member or ID!'
+            $errMsg
         );
 
         return $this->errorResponse();
@@ -264,7 +268,6 @@ class BookmarksPageControllerExtension extends DataExtension
         $bookmarkLink->BookmarkMemberID = $memberID;
         $bookmarkLink->Type = $type;
         $bookmarkLink->write();
-        var_dump($bookmarkLink);
     }
 
     /**
