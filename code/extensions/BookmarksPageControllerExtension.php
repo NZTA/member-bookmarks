@@ -1,5 +1,14 @@
 <?php
+namespace NZTA\MemberBookmark\Extensions;
+
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\Security\Member;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\CMS\Model\SiteTree;
+use NZTA\MemberBookmark\Models\GlobalBookmark;
+use NZTA\MemberBookmark\Models\BookmarkLink;
+use Monolog\Logger;
 
 class BookmarksPageControllerExtension extends DataExtension
 {
@@ -9,6 +18,12 @@ class BookmarksPageControllerExtension extends DataExtension
     private static $allowed_actions = [
         'addremovebookmark'
     ];
+
+    private static $dependencies = [
+        'logger' => '%$Psr\Log\LoggerInterface',
+    ];
+
+    public $logger;
 
     /**
      * Helper to get all the {@link GlobalBookmark}s that have been added to
@@ -75,12 +90,12 @@ class BookmarksPageControllerExtension extends DataExtension
      * Adding bookmark link for current user if the bookmark has not already
      * been saved. If bookmark exists, bookmark will be removed.
      *
-     * @param \SS_HTTPRequest $request
+     * @param HTTPRequest $request
      *
      * @throws \Exception
      * @return string
      */
-    public function addremovebookmark(SS_HTTPRequest $request)
+    public function addremovebookmark(HTTPRequest $request)
     {
         // ensure this is an ajax reqeust
         if (!$request->isAjax()) {
@@ -129,19 +144,19 @@ class BookmarksPageControllerExtension extends DataExtension
             }
 
         } catch (Exeception $e) {
-            SS_Log::log(
+            $this->logger->log(
+                Logger::ERROR,
                 sprintf(
                     'Error in add bookmark . %s',
                     $e->getMessage()
-                ),
-                SS_Log::ERR
+                )
             );
         }
 
         // log to push to raygun if it gets here
-        SS_Log::log(
-            'Error in add bookmark - Invalid  Member or ID!',
-            SS_Log::ERR
+        $this->logger->log(
+            Logger::ERROR,
+            'Error in add bookmark - Invalid  Member or ID!'
         );
 
         return $this->errorResponse();
@@ -150,7 +165,7 @@ class BookmarksPageControllerExtension extends DataExtension
     /**
      * Send back an error response.
      *
-     * @return SS_HTTPResponse
+     * @return HTTPResponse
      */
     private function errorResponse()
     {
@@ -165,7 +180,7 @@ class BookmarksPageControllerExtension extends DataExtension
      * Send back a successful response. Also pass back any custom data in the
      * body if required.
      *
-     * @return SS_HTTPResponse
+     * @return HTTPResponse
      */
     private function successResponse()
     {
@@ -186,13 +201,13 @@ class BookmarksPageControllerExtension extends DataExtension
     }
 
     /**
-     * @param \SS_HTTPRequest $request
+     * @param HTTPRequest $request
      * @param string $type
      * @param integer $ID
      *
      * @return array
      */
-    private function getBookmarkFilterOptions(SS_HTTPRequest $request, $type, $ID)
+    private function getBookmarkFilterOptions(HTTPRequest $request, $type, $ID)
     {
         switch ($type) {
             case 'SiteTree':
@@ -217,14 +232,14 @@ class BookmarksPageControllerExtension extends DataExtension
     }
 
     /**
-     * @param \SS_HTTPRequest $request
+     * @param HTTPRequest $request
      * @param string $type
      * @param integer $ID
      * @param integer $memberID
      *
      * @return void
      */
-    private function createBookmarkFromData(SS_HTTPRequest $request, $type, $ID, $memberID)
+    private function createBookmarkFromData(HTTPRequest $request, $type, $ID, $memberID)
     {
         $bookmarkLink = new BookmarkLink();
 
@@ -249,6 +264,7 @@ class BookmarksPageControllerExtension extends DataExtension
         $bookmarkLink->BookmarkMemberID = $memberID;
         $bookmarkLink->Type = $type;
         $bookmarkLink->write();
+        var_dump($bookmarkLink);
     }
 
     /**

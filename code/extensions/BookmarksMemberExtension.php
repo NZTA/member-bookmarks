@@ -1,5 +1,9 @@
 <?php
+namespace NZTA\MemberBookmark\Extensions;
+
 use SilverStripe\ORM\DataExtension;
+use NZTA\MemberBookmark\Models\BookmarkLink;
+use SilverStripe\Security\Member;
 
 /**
  * This class is responsible for adding Bookmarks specific links to Members.
@@ -12,8 +16,16 @@ class BookmarksMemberExtension extends DataExtension
      * @var array
      */
     private static $has_many = [
-        'Bookmarks' => 'BookmarkLink'
+        'Bookmarks' => BookmarkLink::class,
     ];
+
+    /**
+     * @var array
+     */
+    private static $has_one = [
+        'Member' => Member::class,
+    ];
+
 
     /**
      * Get bookmarks and split into their respective top level pages

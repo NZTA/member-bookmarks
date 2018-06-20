@@ -1,4 +1,6 @@
 <?php
+namespace NZTA\MemberBookmark\Extensions;
+
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\Forms\FieldList;
 
