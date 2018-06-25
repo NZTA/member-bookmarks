@@ -1,9 +1,12 @@
 <?php
 namespace NZTA\MemberBookmark\Extensions;
 
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
 use SilverStripe\ORM\DataExtension;
 use NZTA\MemberBookmark\Models\BookmarkLink;
 use SilverStripe\Security\Member;
+use SilverStripe\CMS\Model\SiteTree;
 
 /**
  * This class is responsible for adding Bookmarks specific links to Members.

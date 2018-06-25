@@ -1,4 +1,10 @@
 <?php
+use SilverStripe\Dev\FunctionalTest;
+use SilverStripe\Core\injector\injector;
+use SilverStripe\Security\Member;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\Control\HTTPRequest;
+use NZTA\MemberBookmark\Models\BookmarkLink;
 
 class MemberBookmarksTest extends FunctionalTest
 {
@@ -12,26 +18,26 @@ class MemberBookmarksTest extends FunctionalTest
      * @var array
      */
     protected $requiredExtensions = [
-        'Member'          => [
-            'BookmarksMemberExtension'
+        'SilverStripe\Security\Member'          => [
+            'NZTA\MemberBookmark\Extensions\BookmarksMemberExtension'
         ],
-        'Page_Controller' => [
-            'BookmarksPageControllerExtension'
+        '\Page_Controller' => [
+            'NZTA\MemberBookmark\Extensions\BookmarksPageControllerExtension'
         ]
     ];
 
     public function testGetGlobalBookmarks()
     {
-        $bookmarks = Injector::inst()->get('BookmarksPageControllerExtension')->getGlobalBookmarks();
+        $bookmarks = Injector::inst()->get('NZTA\MemberBookmark\Extensions\BookmarksPageControllerExtension')->getGlobalBookmarks();
 
         // Check global bookmarks count before logged in
         $this->assertEquals(2, $bookmarks->count());
 
         // Logged as Member one - (Group: group one)
-        $member = $this->objFromFixture('Member', 'Member1');
+        $member = $this->objFromFixture('SilverStripe\Security\Member', 'Member1');
         $this->logInAs($member);
 
-        $bookmarks = Injector::inst()->get('BookmarksPageControllerExtension')->getGlobalBookmarks();
+        $bookmarks = Injector::inst()->get('NZTA\MemberBookmark\Extensions\BookmarksPageControllerExtension')->getGlobalBookmarks();
 
         // Get global bookmarks for Member1 (Exclude Group 'Group one')
         $this->assertEquals(1, $bookmarks->count());
@@ -53,7 +59,7 @@ class MemberBookmarksTest extends FunctionalTest
         // Check user bookmarks count before logged in
         $this->assertEquals(0, $bookmarks->count());
 
-        $member = $this->objFromFixture('Member', 'Member1');
+        $member = $this->objFromFixture('SilverStripe\Security\Member', 'Member1');
         $this->logInAs($member);
 
         $bookmarks = $memberObject->getMemberBookmarks();
@@ -94,8 +100,8 @@ class MemberBookmarksTest extends FunctionalTest
             'ID' => $page->ID
         ];
 
-        $controller = new Page_Controller();
-        $request = new SS_HTTPRequest('POST', 'addremovebookmark', '', $postData);
+        $controller = new \PageController();
+        $request = new HTTPRequest('POST', 'addremovebookmark', '', $postData);
         $request->addHeader('X-Requested-With', 'XMLHttpRequest');
 
         $response = $controller->addremovebookmark($request);
@@ -103,7 +109,7 @@ class MemberBookmarksTest extends FunctionalTest
         // Ensure user cant add bookmarks until logedd in
         $this->assertEquals(403, $response->getStatusCode());
 
-        $member = $this->objFromFixture('Member', 'Member1');
+        $member = $this->objFromFixture('SilverStripe\Security\Member', 'Member1');
         $this->logInAs($member);
 
         $response = $controller->addremovebookmark($request);
