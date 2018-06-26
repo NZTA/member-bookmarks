@@ -140,7 +140,7 @@ class BookmarksPageControllerExtension extends DataExtension
                     throw new Exception('No filters found!');
                 }
 
-                return $this->successResponse();
+                return $this->successResponse(['PageID' => $ID]);
             }
 
         } catch (Exeception $e) {
@@ -187,9 +187,10 @@ class BookmarksPageControllerExtension extends DataExtension
      * Send back a successful response. Also pass back any custom data in the
      * body if required.
      *
+     * @param array $data
      * @return HTTPResponse
      */
-    private function successResponse()
+    private function successResponse($data = [])
     {
         $response = $this->owner->getResponse();
         $response->setStatusCode(200);
@@ -197,7 +198,6 @@ class BookmarksPageControllerExtension extends DataExtension
 
         // provide hook for custom data to be passed back if needed
         if (method_exists($this->owner, 'updateBookmarkSuccessResponse')) {
-            $data = [];
             $extraData = $this->owner->updateBookmarkSuccessResponse($data);
 
             // add the extra data to the body of the response
