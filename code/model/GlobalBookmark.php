@@ -7,6 +7,10 @@ use SilverStripe\Forms\ListboxField;
 
 class GlobalBookmark extends Link
 {
+    /**
+     * @var string
+     */
+    private static $table_name = "GlobalBookmark";
 
     /**
      * @var array

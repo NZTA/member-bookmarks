@@ -6,6 +6,10 @@ use SilverStripe\Security\Member;
 
 class BookmarkLink extends Link
 {
+    /**
+     * @var string
+     */
+    private static $table_name = "BookmarkLink";
 
     /**
      * @var array
