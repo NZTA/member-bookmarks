@@ -1,4 +1,14 @@
 <?php
+namespace NZTA\MemberBookmark\Extensions;
+
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\Security\Member;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\CMS\Model\SiteTree;
+use NZTA\MemberBookmark\Models\GlobalBookmark;
+use NZTA\MemberBookmark\Models\BookmarkLink;
+use Monolog\Logger;
 
 class BookmarksPageControllerExtension extends DataExtension
 {
@@ -8,6 +18,12 @@ class BookmarksPageControllerExtension extends DataExtension
     private static $allowed_actions = [
         'addremovebookmark'
     ];
+
+    private static $dependencies = [
+        'logger' => '%$Psr\Log\LoggerInterface',
+    ];
+
+    public $logger;
 
     /**
      * Helper to get all the {@link GlobalBookmark}s that have been added to
@@ -74,12 +90,12 @@ class BookmarksPageControllerExtension extends DataExtension
      * Adding bookmark link for current user if the bookmark has not already
      * been saved. If bookmark exists, bookmark will be removed.
      *
-     * @param \SS_HTTPRequest $request
+     * @param HTTPRequest $request
      *
      * @throws \Exception
      * @return string
      */
-    public function addremovebookmark(SS_HTTPRequest $request)
+    public function addremovebookmark(HTTPRequest $request)
     {
         // ensure this is an ajax reqeust
         if (!$request->isAjax()) {
@@ -124,38 +140,45 @@ class BookmarksPageControllerExtension extends DataExtension
                     throw new Exception('No filters found!');
                 }
 
-                return $this->successResponse();
+                return $this->successResponse(['PageID' => $ID]);
             }
 
         } catch (Exeception $e) {
-            SS_Log::log(
+            $this->logger->log(
+                Logger::ERROR,
                 sprintf(
                     'Error in add bookmark . %s',
                     $e->getMessage()
-                ),
-                SS_Log::ERR
+                )
             );
         }
 
+        $errMsg = "Error in add bookmark - Invalid item ID.";
+        $useMsg = "";
+        if (!$member) {
+            $errMsg = "Error in add bookmark - not logged in.";
+            $useMsg = "Sorry, you need to login to favourite a page.";
+        }
         // log to push to raygun if it gets here
-        SS_Log::log(
-            'Error in add bookmark - Invalid  Member or ID!',
-            SS_Log::ERR
+        $this->logger->log(
+            Logger::INFO,
+            $errMsg
         );
 
-        return $this->errorResponse();
+        return $this->errorResponse($useMsg);
     }
 
     /**
      * Send back an error response.
      *
-     * @return SS_HTTPResponse
+     * @return HTTPResponse
      */
-    private function errorResponse()
+    private function errorResponse($description = "")
     {
         $response = $this->owner->getResponse();
         $response->setStatusCode(403);
         $response->addHeader('Content-Type', 'application/json');
+        $response->setStatusDescription($description);
 
         return $response;
     }
@@ -164,9 +187,10 @@ class BookmarksPageControllerExtension extends DataExtension
      * Send back a successful response. Also pass back any custom data in the
      * body if required.
      *
-     * @return SS_HTTPResponse
+     * @param array $data
+     * @return HTTPResponse
      */
-    private function successResponse()
+    private function successResponse($data = [])
     {
         $response = $this->owner->getResponse();
         $response->setStatusCode(200);
@@ -174,7 +198,6 @@ class BookmarksPageControllerExtension extends DataExtension
 
         // provide hook for custom data to be passed back if needed
         if (method_exists($this->owner, 'updateBookmarkSuccessResponse')) {
-            $data = [];
             $extraData = $this->owner->updateBookmarkSuccessResponse($data);
 
             // add the extra data to the body of the response
@@ -185,13 +208,13 @@ class BookmarksPageControllerExtension extends DataExtension
     }
 
     /**
-     * @param \SS_HTTPRequest $request
+     * @param HTTPRequest $request
      * @param string $type
      * @param integer $ID
      *
      * @return array
      */
-    private function getBookmarkFilterOptions(SS_HTTPRequest $request, $type, $ID)
+    private function getBookmarkFilterOptions(HTTPRequest $request, $type, $ID)
     {
         switch ($type) {
             case 'SiteTree':
@@ -216,14 +239,14 @@ class BookmarksPageControllerExtension extends DataExtension
     }
 
     /**
-     * @param \SS_HTTPRequest $request
+     * @param HTTPRequest $request
      * @param string $type
      * @param integer $ID
      * @param integer $memberID
      *
      * @return void
      */
-    private function createBookmarkFromData(SS_HTTPRequest $request, $type, $ID, $memberID)
+    private function createBookmarkFromData(HTTPRequest $request, $type, $ID, $memberID)
     {
         $bookmarkLink = new BookmarkLink();
 
@@ -274,5 +297,4 @@ class BookmarksPageControllerExtension extends DataExtension
 
         return $title;
     }
-
 }

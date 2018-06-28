@@ -1,13 +1,21 @@
 <?php
+namespace NZTA\MemberBookmark\Models;
+
+use Sheadawson\Linkable\Models\Link;
+use SilverStripe\Security\Member;
 
 class BookmarkLink extends Link
 {
+    /**
+     * @var string
+     */
+    private static $table_name = "BookmarkLink";
 
     /**
      * @var array
      */
     private static $has_one = [
-        'BookmarkMember' => 'Member'
+        'BookmarkMember' => Member::class,
     ];
 
     /**
@@ -22,5 +30,4 @@ class BookmarkLink extends Link
 
         return $fields;
     }
-
 }

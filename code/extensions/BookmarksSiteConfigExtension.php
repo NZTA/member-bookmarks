@@ -1,4 +1,9 @@
 <?php
+namespace NZTA\MemberBookmark\Extensions;
+
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\TextField;
 
 class BookmarksSiteConfigExtension extends DataExtension
 {
@@ -21,5 +26,4 @@ class BookmarksSiteConfigExtension extends DataExtension
                 ->setDescription('This is the heading displayed above the list of Global Bookmarks')
         );
     }
-
 }

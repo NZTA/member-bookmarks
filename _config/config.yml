@@ -2,18 +2,18 @@
 name: 'member-bookmarks'
 ---
 
-SiteConfig:
+SilverStripe\SiteConfig\SiteConfig:
   extensions:
-    - BookmarksSiteConfigExtension
+    - NZTA\MemberBookmark\Extensions\BookmarksSiteConfigExtension
 
-Member:
+SilverStripe\Security\Member:
   extensions:
-    - 'BookmarksMemberExtension'
+    - NZTA\MemberBookmark\Extensions\BookmarksMemberExtension
 
-Group:
+SilverStripe\Security\Group:
   extensions:
-    - BookmarksGroupExtension
+    - NZTA\MemberBookmark\Extensions\BookmarksGroupExtension
 
-Page_Controller:
+PageController:
   extensions:
-    - BookmarksPageControllerExtension
+    - NZTA\MemberBookmark\Extensions\BookmarksPageControllerExtension
