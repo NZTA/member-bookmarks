@@ -30,5 +30,5 @@
     "psr-4": {
       "NZTA\\MemberBookmark\\Tests\\": "tests/"
     }
-  },
+  }
 }
