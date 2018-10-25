@@ -4,6 +4,7 @@ namespace NZTA\MemberBookmark\Models;
 use Sheadawson\Linkable\Models\Link;
 use SilverStripe\Security\Group;
 use SilverStripe\Forms\ListboxField;
+use SilverStripe\Forms\FieldList;
 
 class GlobalBookmark extends Link
 {

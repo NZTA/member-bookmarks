@@ -9,6 +9,11 @@ use SilverStripe\CMS\Model\SiteTree;
 use NZTA\MemberBookmark\Models\GlobalBookmark;
 use NZTA\MemberBookmark\Models\BookmarkLink;
 use Monolog\Logger;
+use SilverStripe\ORM\DataList;
+use SilverStripe\Security\Security;
+use Exception;
+use SilverStripe\Core\Convert;
+use SilverStripe\ORM\DataObject;
 
 class BookmarksPageControllerExtension extends DataExtension
 {
@@ -36,7 +41,7 @@ class BookmarksPageControllerExtension extends DataExtension
     {
         $bookmarks = GlobalBookmark::get();
 
-        $member = Member::currentUser();
+        $member = Security::getCurrentUser();
 
         // if there is a logged in user check if his group has been excluded
         if ($member) {
@@ -72,7 +77,7 @@ class BookmarksPageControllerExtension extends DataExtension
     public function IsBookmarked()
     {
         $pageId = $this->owner->data()->ID;
-        $member = Member::currentUser();
+        $member = Security::getCurrentUser();
 
         if (!$member) {
             return false;
@@ -105,7 +110,7 @@ class BookmarksPageControllerExtension extends DataExtension
         $ID = (int)$request->postVar('ID');
 
         try {
-            $member = Member::currentUser();
+            $member = Security::getCurrentUser();
 
             if (($ID > 0) && $member) {
                 // set default type
@@ -143,7 +148,7 @@ class BookmarksPageControllerExtension extends DataExtension
                 return $this->successResponse(['PageID' => $ID]);
             }
 
-        } catch (Exeception $e) {
+        } catch (Exception $e) {
             $this->logger->log(
                 Logger::ERROR,
                 sprintf(
@@ -276,7 +281,7 @@ class BookmarksPageControllerExtension extends DataExtension
     /**
      * @param integer $ID
      *
-     * @return \DataObject
+     * @return DataObject
      */
     private function getSiteTree($ID)
     {

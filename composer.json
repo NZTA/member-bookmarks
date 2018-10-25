@@ -16,9 +16,19 @@
   "require": {
     "silverstripe/framework": "~4.1",
     "silverstripe/cms": "~4.1",
-    "sheadawson/silverstripe-linkable": "master"
+    "sheadawson/silverstripe-linkable": "^2.0"
   },
   "require-dev": {
-    "phpunit/PHPUnit": "~3.7"
-  }
+    "phpunit/phpunit": "^5.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "NZTA\\MemberBookmark\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "NZTA\\MemberBookmark\\Tests\\": "tests/"
+    }
+  },
 }

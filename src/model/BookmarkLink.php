@@ -3,6 +3,7 @@ namespace NZTA\MemberBookmark\Models;
 
 use Sheadawson\Linkable\Models\Link;
 use SilverStripe\Security\Member;
+use SilverStripe\Forms\FieldList;
 
 class BookmarkLink extends Link
 {
