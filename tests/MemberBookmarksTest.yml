@@ -1,4 +1,4 @@
-Group:
+SilverStripe\Security\Group:
   Group1:
     Title: Group one
   Group2:
@@ -18,19 +18,19 @@ Page:
   Page4:
     Title: Page four
 
-GlobalBookmark:
+NZTA\MemberBookmark\Models\GlobalBookmark:
   Bookmark1:
     Title: Bookmark one
     Type: SiteTree
     SiteTreeID: =>Page.Page1
-    ExcludeGroups: =>Group.Group1
+    ExcludeGroups: =>SilverStripe\Security\Group.Group1
   Bookmark2:
     Title: Bookmark two
     Type: SiteTree
     SiteTreeID: =>Page.Page2
-    ExcludeGroups: =>Group.Group2
+    ExcludeGroups: =>SilverStripe\Security\Group.Group2
 
-BookmarkLink:
+NZTA\MemberBookmark\Models\BookmarkLink:
   Link1:
     Title: Bookmark one
     Type: SiteTree
@@ -48,9 +48,12 @@ BookmarkLink:
     Type: SiteTree
     SiteTreeID: =>Page.Page4
 
-Member:
+SilverStripe\Security\Member:
   Member1:
     FirstName: Bookmark member
     Surname: One
-    Groups: =>Group.Group1
-    Bookmarks: =>BookmarkLink.Link2,=>BookmarkLink.Link3,=>BookmarkLink.Link4
+    Groups: =>SilverStripe\Security\Group.Group1
+    Bookmarks:
+      - =>NZTA\MemberBookmark\Models\BookmarkLink.Link2
+      - =>NZTA\MemberBookmark\Models\BookmarkLink.Link3
+      - =>NZTA\MemberBookmark\Models\BookmarkLink.Link4
