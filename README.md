@@ -1,5 +1,6 @@
 # Member Bookmarks
 
+This is for Silverstripe 4.x.
 Provides the ability to add global and user specific bookmarks.
 
 ## Features
