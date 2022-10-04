@@ -1,7 +1,7 @@
 <?php
 namespace NZTA\MemberBookmark\Models;
 
-use Sheadawson\Linkable\Models\Link;
+use gorriecoe\Link\Models\Link;
 use SilverStripe\Security\Group;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\FieldList;
@@ -44,7 +44,7 @@ class GlobalBookmark extends Link
      * Here we check if this GlobalBookmark has a
      * SortOrder value. If not we assign it one.
      */
-    protected function onBeforeWrite()
+    public function onBeforeWrite()
     {
         if (!$this->SortOrder) {
             $this->SortOrder = GlobalBookmark::get()->max('SortOrder') + 1;
