@@ -1,7 +1,7 @@
 <?php
 namespace NZTA\MemberBookmark\Models;
 
-use Sheadawson\Linkable\Models\Link;
+use gorriecoe\Link\Models\Link;
 use SilverStripe\Admin\ModelAdmin;
 use NZTA\MemberBookmark\Models\GlobalBookmark;
 use SilverStripe\Forms\GridField\GridField;
