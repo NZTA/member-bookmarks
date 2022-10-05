@@ -16,7 +16,7 @@
   "require": {
     "silverstripe/framework": "~4.1",
     "silverstripe/cms": "~4.1",
-    "sheadawson/silverstripe-linkable": "^2.0",
+    "gorriecoe/silverstripe-link": "^1.0",
     "undefinedoffset/sortablegridfield": "^2.0"
   },
   "require-dev": {
