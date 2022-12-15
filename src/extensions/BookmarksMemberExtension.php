@@ -39,9 +39,9 @@ class BookmarksMemberExtension extends DataExtension
     {
         $bookmarks = [];
 
-        $member = Member::currentUser();
+        $member = $this->owner;
 
-        if ($member) {
+        if ($member->exists()) {
             // Get the member bookmark list
             $links = $member->Bookmarks();
 
