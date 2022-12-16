@@ -12,6 +12,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\Security\Member;
+use SilverStripe\Versioned\Versioned;
 
 class MemberBookmarksTest extends SapphireTest
 {
@@ -112,7 +113,7 @@ class MemberBookmarksTest extends SapphireTest
     public function testNonMembersCannotBookmark()
     {
         // Ensure Sitetree page been added to bookmark list
-        $page = $this->objFromFixture('Page', 'Page1');
+        $page = $this->objFromFixture(Page::class, 'Page1');
         $postData = [
             'ID' => $page->ID
         ];
@@ -133,7 +134,7 @@ class MemberBookmarksTest extends SapphireTest
         $this->logInAs($member);
 
         // Ensure Sitetree page been added to bookmark list
-        $page = $this->objFromFixture('Page', 'Page1');
+        $page = $this->objFromFixture(Page::class, 'Page1');
         $postData = [
             'ID' => $page->ID
         ];
@@ -158,14 +159,29 @@ class MemberBookmarksTest extends SapphireTest
         $this->assertEquals($page->Title, $bookmark->Title);
     }
 
-    public function testWhatHappensIfWeDeleteAParentPage()
+    /**
+     * Depending on the version of PHP this one may need to run via `phpunit --fail-on-warning`
+     */
+    public function testWhatHappensIfWeUnpublishAParentPageButTheBookmarkIsStillPublished()
     {
+        $this->logInWithPermission('ADMIN');
+        Versioned::set_stage(Versioned::DRAFT);
+        foreach (Page::get() as $page) {
+            $page->publishRecursive();
+        }
+        Versioned::set_stage(Versioned::LIVE);
+        $firstCategory = $this->objFromFixture(Page::class, 'Page1');
+        $childPage = $this->objFromFixture(Page::class, 'Page2');
+        $firstCategory->doUnpublish();
+        $this->assertCount(1, Page::get());
+        $childPage->publishRecursive();
+        $this->assertCount(2, Page::get());
+        $this->logOut();
+
         $member = $this->objFromFixture(Member::class, 'Member1');
         $this->logInAs($member);
-        $page = $this->objFromFixture('Page', 'Page1');
-        $page->delete();
 
-        $this->assertCount(1, Page::get());
+        $this->assertCount(2, Page::get());
 
         $bookmarks = $member->getMemberBookmarks();
 
