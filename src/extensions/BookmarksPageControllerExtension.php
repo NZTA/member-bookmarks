@@ -1,4 +1,5 @@
 <?php
+
 namespace NZTA\MemberBookmark\Extensions;
 
 use SilverStripe\ORM\DataExtension;
@@ -31,9 +32,8 @@ class BookmarksPageControllerExtension extends DataExtension
     public $logger;
 
     /**
-     * Helper to get all the {@link GlobalBookmark}s that have been added to
-     * the CMS. Excludes any bookmarks that have an ExcludeGroup that the
-     * current user is a part of.
+     * Helper to get all the {@link GlobalBookmark}s that have been added to the CMS. Excludes any bookmarks that have
+     * an ExcludeGroup that the current user is a part of.
      *
      * @return DataList
      */
@@ -69,8 +69,7 @@ class BookmarksPageControllerExtension extends DataExtension
     }
 
     /**
-     * Helper to check if the current page has been bookmarked by the current
-     * user.
+     * Helper to check if the current page has been bookmarked by the current user.
      *
      * @return bool
      */
@@ -92,19 +91,18 @@ class BookmarksPageControllerExtension extends DataExtension
     }
 
     /**
-     * Adding bookmark link for current user if the bookmark has not already
-     * been saved. If bookmark exists, bookmark will be removed.
+     * Adding bookmark link for current user if the bookmark has not already been saved. If bookmark exists, bookmark
+     * will be removed.
      *
      * @param HTTPRequest $request
      *
-     * @throws \Exception
-     * @return string
+     * @return HTTPResponse
      */
-    public function addremovebookmark(HTTPRequest $request)
+    public function addremovebookmark(HTTPRequest $request): HTTPResponse
     {
         // ensure this is an ajax reqeust
         if (!$request->isAjax()) {
-            return $this->owner->httpError(403);
+            return $this->owner->httpError(400);
         }
 
         $ID = (int)$request->postVar('ID');
@@ -147,22 +145,21 @@ class BookmarksPageControllerExtension extends DataExtension
 
                 return $this->successResponse(['PageID' => $ID]);
             }
-
         } catch (Exception $e) {
             $this->logger->log(
                 Logger::ERROR,
                 sprintf(
-                    'Error in add bookmark . %s',
+                    'Error adding bookmark - %s',
                     $e->getMessage()
                 )
             );
         }
 
-        $errMsg = "Error in add bookmark - Invalid item ID.";
+        $errMsg = "Error adding bookmark - Invalid item ID.";
         $useMsg = "";
         if (!$member) {
-            $errMsg = "Error in add bookmark - not logged in.";
-            $useMsg = "Sorry, you need to login to favourite a page.";
+            $errMsg = "Error adding bookmark - not logged in.";
+            $useMsg = "Sorry, you need to log in to favourite a page.";
         }
         // log to push to raygun if it gets here
         $this->logger->log(
@@ -267,10 +264,8 @@ class BookmarksPageControllerExtension extends DataExtension
                 if ($siteTree) {
                     $bookmarkLink->Title = $siteTree->Title;
                     $bookmarkLink->SiteTreeID = $ID;
-
                 }
                 break;
-
         }
 
         $bookmarkLink->BookmarkMemberID = $memberID;

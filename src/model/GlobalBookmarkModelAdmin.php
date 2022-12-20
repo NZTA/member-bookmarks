@@ -1,10 +1,12 @@
 <?php
+
 namespace NZTA\MemberBookmark\Models;
 
+use NZTA\MemberBookmark\Models\GlobalBookmark;
 use Sheadawson\Linkable\Models\Link;
 use SilverStripe\Admin\ModelAdmin;
-use NZTA\MemberBookmark\Models\GlobalBookmark;
 use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
 class GlobalBookmarkModelAdmin extends ModelAdmin
@@ -26,21 +28,9 @@ class GlobalBookmarkModelAdmin extends ModelAdmin
         GlobalBookmark::class
     ];
 
-    public function getEditForm($id = null, $fields = null)
+    protected function getGridFieldConfig(): GridFieldConfig
     {
-        $form = parent::getEditForm($id, $fields);
-
-        if ($this->modelClass == GlobalBookmark::class
-            && $gridField = $form->Fields()->dataFieldByName(
-                $this->sanitiseClassName($this->modelClass)
-            )
-        ) {
-            if ($gridField instanceof GridField) {
-                $gridField->getConfig()
-                    ->addComponent(new GridFieldSortableRows('SortOrder'));
-            }
-        }
-
-        return $form;
+        $config = parent::getGridFieldConfig();
+        return $config->addComponent(new GridFieldSortableRows('SortOrder'));
     }
 }

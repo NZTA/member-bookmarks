@@ -1,4 +1,5 @@
 <?php
+
 namespace NZTA\MemberBookmark\Extensions;
 
 use NZTA\MemberBookmark\Models\GlobalBookmark;

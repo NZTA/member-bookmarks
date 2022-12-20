@@ -1,4 +1,5 @@
 <?php
+
 namespace NZTA\MemberBookmark\Extensions;
 
 use SilverStripe\ORM\DataExtension;
@@ -7,7 +8,6 @@ use SilverStripe\Forms\TextField;
 
 class BookmarksSiteConfigExtension extends DataExtension
 {
-
     /**
      * @var array
      */
@@ -20,10 +20,14 @@ class BookmarksSiteConfigExtension extends DataExtension
      */
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldToTab(
-            'Root.Bookmarks',
-            TextField::create('GlobalBookmarksHeading', 'Global Bookmarks Heading')
-                ->setDescription('This is the heading displayed above the list of Global Bookmarks')
+        $globalBookmarksHeading = TextField::create(
+            'GlobalBookmarksHeading',
+            _t(self::class . '.GLOBAL_HEADING', 'Global Bookmarks Heading')
         );
+        $globalBookmarksHeading->setDescription(_t(
+            self::class . '.GLOBAL_HEADING_DESCRIPTION',
+            'This is the heading displayed above the list of Global Bookmarks'
+        ));
+        $fields->addFieldToTab('Root.Bookmarks', $globalBookmarksHeading);
     }
 }

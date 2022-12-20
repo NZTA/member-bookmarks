@@ -1,4 +1,5 @@
 <?php
+
 namespace NZTA\MemberBookmark\Models;
 
 use Sheadawson\Linkable\Models\Link;

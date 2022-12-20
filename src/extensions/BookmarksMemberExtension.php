@@ -1,4 +1,5 @@
 <?php
+
 namespace NZTA\MemberBookmark\Extensions;
 
 use SilverStripe\ORM\ArrayList;
@@ -9,12 +10,10 @@ use SilverStripe\Security\Member;
 use SilverStripe\CMS\Model\SiteTree;
 
 /**
- * This class is responsible for adding Bookmarks specific links to Members.
- * Class BookmarksMemberExtension
+ * Responsible for adding Bookmarks specific links to Members.
  */
 class BookmarksMemberExtension extends DataExtension
 {
-
     /**
      * @var array
      */
@@ -41,22 +40,14 @@ class BookmarksMemberExtension extends DataExtension
 
         $member = $this->owner;
 
-        if ($member->exists()) {
-            // Get the member bookmark list
-            $links = $member->Bookmarks();
-
-            foreach ($links as $link) {
-                $linkType = $link->Type;
-
-                switch ($linkType) {
-                    case 'URL':
-                        $bookmarks = $this->appendUrlBookmark($link, $bookmarks);
-                        break;
-                    case 'SiteTree':
-                    default:
-                        $bookmarks = $this->appendSiteTreeBookmark($link, $bookmarks);
-                        break;
-                }
+        foreach ($member->Bookmarks() as $link) {
+            switch ($link->Type) {
+                case 'URL':
+                    $bookmarks = $this->appendUrlBookmark($link, $bookmarks);
+                    break;
+                case 'SiteTree':
+                default:
+                    $bookmarks = $this->appendSiteTreeBookmark($link, $bookmarks);
             }
         }
 

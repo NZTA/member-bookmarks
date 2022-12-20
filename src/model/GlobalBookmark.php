@@ -1,4 +1,5 @@
 <?php
+
 namespace NZTA\MemberBookmark\Models;
 
 use Sheadawson\Linkable\Models\Link;
@@ -8,42 +9,30 @@ use SilverStripe\Forms\FieldList;
 
 class GlobalBookmark extends Link
 {
-    /**
-     * @var string
-     */
     private static $table_name = "GlobalBookmark";
 
     private static $db = [
         'SortOrder' => 'Int',
     ];
 
-    /**
-     * @var array
-     */
     private static $many_many = [
         'ExcludeGroups' => Group::class,
     ];
 
     private static $default_sort = 'SortOrder';
 
-    /**
-     * @return FieldList
-     */
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
         $fields->removeByName('SortOrder');
 
-        $groups = Group::get()->map('ID', 'Title')->toArray();
-        $fields->addFieldToTab('Root.Main', ListboxField::create('ExcludeGroups', 'Exclude Groups', $groups, '', '', true));
+        $groups = Group::get()->map('ID', 'Title');
+        $excludeGroupsTitle = _t(self::class . '.EXCLUDE_GROUPS', 'Exclude Groups');
+        $fields->addFieldToTab('Root.Main', ListboxField::create('ExcludeGroups', $excludeGroupsTitle, $groups, ''));
 
         return $fields;
     }
 
-    /**
-     * Here we check if this GlobalBookmark has a
-     * SortOrder value. If not we assign it one.
-     */
     protected function onBeforeWrite()
     {
         if (!$this->SortOrder) {

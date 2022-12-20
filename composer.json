@@ -1,8 +1,8 @@
 {
-  "name": "nzta/member-bookmark",
-  "description": "A module for creating member global bookmarks",
+  "name": "nzta/member-bookmarks",
+  "description": "Manage global bookmarks and allow members to add personal bookmarks to pages on the site",
   "type": "silverstripe-vendormodule",
-  "homepage": "https://github.com/NZTA/member-bookmark",
+  "homepage": "https://github.com/NZTA/member-bookmarks",
   "keywords": [
     "silverstripe",
     "bookmark",
@@ -11,13 +11,13 @@
   ],
   "license": "BSD-3-Clause",
   "support": {
-    "issues": "https://github.com/NZTA/member-bookmark/issues"
+    "issues": "https://github.com/NZTA/member-bookmarks/issues"
   },
   "require": {
-    "silverstripe/framework": "~4.1",
-    "silverstripe/cms": "~4.1",
-    "sheadawson/silverstripe-linkable": "^2.0",
-    "undefinedoffset/sortablegridfield": "^2.0"
+    "silverstripe/framework": "^4",
+    "silverstripe/cms": "^4",
+    "sheadawson/silverstripe-linkable": "^2",
+    "undefinedoffset/sortablegridfield": "^2"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.5"

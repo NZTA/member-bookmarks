@@ -107,7 +107,6 @@ class MemberBookmarksTest extends SapphireTest
         // Ensure the category/Parent Title and the bookmark Title same.
         $this->assertEquals('Page four', $secondCategory['Title']);
         $this->assertEquals('Page four', $secondCategory['Bookmarks']->first()->Title);
-
     }
 
     public function testNonMembersCannotBookmark()
