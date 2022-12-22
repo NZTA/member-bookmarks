@@ -76,7 +76,7 @@ class BookmarksMemberExtension extends DataExtension
                 $category = $this->getTopLevelParent($siteTree);
             }
 
-            if (count($category) > 0) {
+            if ($category) {
                 $key = key($category);
 
                 $bookmarks = $this->addCategoryToBookmarks($key, $bookmarks, $category);
@@ -118,7 +118,7 @@ class BookmarksMemberExtension extends DataExtension
         if ($url !== false) {
             // Remove first and last '/' characters from url path
             $paths = explode('/', trim($url['path'], '/'));
-            if (count($paths) > 0) {
+            if ($paths) {
                 // Get the first part of a url as a title/key
                 // e.g https://test.org/abc/test-page
                 // use abc as a key and as a title for parent/category
@@ -170,19 +170,15 @@ class BookmarksMemberExtension extends DataExtension
      */
     private function getTopLevelParent($siteTree)
     {
-        $siteTreeParent = SiteTree::get()->filter('ID', $siteTree->ParentID)->first();
+        $ancestry = $siteTree->getAncestors();
 
-        if ($siteTreeParent) {
-            if ($siteTreeParent->ParentID == 0) {
-                $parentKey = $this->getParentSiteTreeKey($siteTreeParent);
-                $parent[$parentKey]['Title'] = $siteTreeParent->Title;
-                return $parent;
-            }
-
-            return $this->getTopLevelParent($siteTreeParent);
+        if ($ancestry->exists()) {
+            $topLevelParent = $ancestry->pop();
+            $parentKey = $this->getParentSiteTreeKey($topLevelParent);
+            return [$parentKey => ['Title' => $topLevelParent->Title]];
         }
 
-        return false;
+        return [];
     }
 
     /**
