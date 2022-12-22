@@ -66,6 +66,30 @@ class MemberBookmarksTest extends SapphireTest
         $this->assertEquals('Page two', $bookmarkFirst->SiteTree()->Title);
     }
 
+    public function testPageIsBookmarked()
+    {
+        // Logged as Member one - (Group: group one)
+        $member = $this->objFromFixture(Member::class, 'Member1');
+        $this->logInAs($member);
+
+        $page = $this->objFromFixture(Page::class, 'Page4');
+        $controller = new PageController($page);
+
+        $this->assertTrue($controller->IsBookmarked());
+    }
+
+    public function testPageIsNotBookmarked()
+    {
+        // Logged as Member one - (Group: group one)
+        $member = $this->objFromFixture(Member::class, 'Member1');
+        $this->logInAs($member);
+
+        $page = $this->objFromFixture(Page::class, 'Page1');
+        $controller = new PageController($page);
+
+        $this->assertFalse($controller->IsBookmarked());
+    }
+
     public function testNonMembersDoNotHaveBookmarks()
     {
         $memberObject = new Member();
@@ -97,8 +121,13 @@ class MemberBookmarksTest extends SapphireTest
 
         // Get the first bookmark under the parent/category for some assertions
         $firstBookmark = $firstCategory['Bookmarks']->first();
-
         $this->assertEquals('Page two', $firstBookmark->Title);
+        $this->assertEquals('/page-one/page-two/', $firstBookmark->Link);
+
+        // Get the second bookmark under the parent/category for some assertions
+        $secondBookmark = $firstCategory['Bookmarks'][1];
+        $this->assertEquals('Page three', $secondBookmark->Title);
+        $this->assertEquals('/page-one/page-three/', $secondBookmark->Link);
 
 
         // Ensure top level bookmarks getting under same top level category/parent
@@ -107,6 +136,7 @@ class MemberBookmarksTest extends SapphireTest
         // Ensure the category/Parent Title and the bookmark Title same.
         $this->assertEquals('Page four', $secondCategory['Title']);
         $this->assertEquals('Page four', $secondCategory['Bookmarks']->first()->Title);
+        $this->assertEquals('/page-four/', $secondCategory['Bookmarks']->first()->Link);
     }
 
     public function testNonMembersCannotBookmark()
@@ -158,10 +188,7 @@ class MemberBookmarksTest extends SapphireTest
         $this->assertEquals($page->Title, $bookmark->Title);
     }
 
-    /**
-     * Depending on the version of PHP this one may need to run via `phpunit --fail-on-warning`
-     */
-    public function testWhatHappensIfWeUnpublishAParentPageButTheBookmarkIsStillPublished()
+    public function testWhatHappensIfWeUnpublishAParentPageButTheBookmarkedChildPageIsStillPublished()
     {
         $this->logInWithPermission('ADMIN');
         Versioned::set_stage(Versioned::DRAFT);

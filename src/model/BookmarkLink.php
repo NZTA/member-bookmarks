@@ -27,7 +27,6 @@ class BookmarkLink extends Link
     {
         $fields = parent::getCMSFields();
 
-        // hide specific fields
         $fields->removeByName('BookmarkMemberID');
 
         return $fields;
