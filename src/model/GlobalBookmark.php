@@ -28,6 +28,7 @@ class GlobalBookmark extends Link
 
         $groups = Group::get()->map('ID', 'Title');
         $excludeGroupsTitle = _t(self::class . '.EXCLUDE_GROUPS', 'Exclude Groups');
+        $fields->removeByName('ExcludeGroups');
         $fields->addFieldToTab('Root.Main', ListboxField::create('ExcludeGroups', $excludeGroupsTitle, $groups, ''));
 
         return $fields;

@@ -11,15 +11,11 @@ use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
 class GlobalBookmarkModelAdmin extends ModelAdmin
 {
-    /**
-     * @var string
-     */
     private static $url_segment = 'global-bookmarks';
 
-    /**
-     * @var string
-     */
     private static $menu_title = 'Global Bookmarks';
+
+    private static string $menu_icon = 'nzta/member-bookmarks:icon/bookmark.svg';
 
     /**
      * @var array
