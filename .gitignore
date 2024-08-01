@@ -1,2 +1,9 @@
 .idea
 .DS_Store
+.phpunit.result.cache
+app
+assets
+resources
+public
+vendor
+composer.lock

@@ -1,9 +1,11 @@
 <?php
 
-namespace NZTA\MemberBookmark\Tests;
+namespace NZTA\MemberBookmark\Test;
 
 use NZTA\MemberBookmark\Models\GlobalBookmarkModelAdmin;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\Session;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
@@ -19,6 +21,7 @@ class GlobalBookmarkAdminTest extends SapphireTest
         $admin = new GlobalBookmarkModelAdmin();
 
         $request = $admin->getRequest();
+        Injector::inst()->registerService($request, HTTPRequest::class);
         $request->setSession(new Session([]));
         $admin->doInit();
 

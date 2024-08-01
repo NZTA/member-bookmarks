@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/silverstripe/cms/bootstrap.php" colors="true" failOnWarning="true">
+<phpunit bootstrap="vendor/silverstripe/cms/tests/bootstrap.php" colors="true" failOnWarning="true">
     <testsuites>
         <testsuite name="memberBookmarks">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <!-- phpunit 5.7 coverage config -->
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
-    <!-- phpunit 9.5 coverage config -->
     <coverage>
         <include>
             <directory>src</directory>

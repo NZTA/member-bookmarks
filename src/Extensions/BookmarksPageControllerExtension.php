@@ -2,27 +2,23 @@
 
 namespace NZTA\MemberBookmark\Extensions;
 
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\Security\Member;
+use Exception;
+use Monolog\Logger;
+use NZTA\MemberBookmark\Models\BookmarkLink;
+use NZTA\MemberBookmark\Models\GlobalBookmark;
+use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
-use SilverStripe\CMS\Model\SiteTree;
-use NZTA\MemberBookmark\Models\GlobalBookmark;
-use NZTA\MemberBookmark\Models\BookmarkLink;
-use Monolog\Logger;
-use SilverStripe\ORM\DataList;
-use SilverStripe\Security\Security;
-use Exception;
 use SilverStripe\Core\Convert;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Security;
 
 class BookmarksPageControllerExtension extends DataExtension
 {
-    /**
-     * @var array
-     */
     private static $allowed_actions = [
-        'addremovebookmark'
+        'addremovebookmark',
     ];
 
     private static $dependencies = [
@@ -223,7 +219,7 @@ class BookmarksPageControllerExtension extends DataExtension
                 $siteTreeExists = $this->getSiteTree($ID);
                 if ($siteTreeExists) {
                     return [
-                        'SiteTreeID' => $ID
+                        'SiteTreeID' => $ID,
                     ];
                 }
 

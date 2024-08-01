@@ -14,13 +14,14 @@
     "issues": "https://github.com/NZTA/member-bookmarks/issues"
   },
   "require": {
-    "silverstripe/framework": "^4",
-    "silverstripe/cms": "^4",
+    "silverstripe/cms": "^4 | ^5",
     "sheadawson/silverstripe-linkable": "^2",
     "undefinedoffset/sortablegridfield": "^2"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.5"
+    "phpunit/phpunit": "^9.5",
+    "slevomat/coding-standard": "^8",
+    "squizlabs/php_codesniffer": "^3"
   },
   "autoload": {
     "psr-4": {
@@ -36,5 +37,18 @@
     "expose": [
         "icon"
     ]
+  },
+  "scripts": {
+    "lint": "phpcs -s src/ tests/",
+    "lint-fix": "phpcbf -s src/ tests/",
+    "test": "phpunit -d memory_limit=512M",
+    "test-flush": "phpunit -d memory_limit=512M -d flush=1"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "silverstripe/vendor-plugin": true,
+      "dealerdirect/phpcodesniffer-composer-installer": false
+    }
   }
 }

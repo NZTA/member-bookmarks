@@ -3,9 +3,7 @@
 namespace NZTA\MemberBookmark\Models;
 
 use NZTA\MemberBookmark\Models\GlobalBookmark;
-use Sheadawson\Linkable\Models\Link;
 use SilverStripe\Admin\ModelAdmin;
-use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
@@ -21,7 +19,7 @@ class GlobalBookmarkModelAdmin extends ModelAdmin
      * @var array
      */
     private static $managed_models = [
-        GlobalBookmark::class
+        GlobalBookmark::class,
     ];
 
     protected function getGridFieldConfig(): GridFieldConfig

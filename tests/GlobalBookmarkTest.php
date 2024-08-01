@@ -1,6 +1,6 @@
 <?php
 
-namespace NZTA\MemberBookmark\Tests;
+namespace NZTA\MemberBookmark\Test;
 
 use NZTA\MemberBookmark\Models\GlobalBookmark;
 use SilverStripe\Dev\SapphireTest;

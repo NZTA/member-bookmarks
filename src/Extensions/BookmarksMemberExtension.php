@@ -2,32 +2,25 @@
 
 namespace NZTA\MemberBookmark\Extensions;
 
-use SilverStripe\ORM\ArrayList;
-use SilverStripe\View\ArrayData;
-use SilverStripe\ORM\DataExtension;
 use NZTA\MemberBookmark\Models\BookmarkLink;
-use SilverStripe\Security\Member;
 use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\Security\Member;
+use SilverStripe\View\ArrayData;
 
 /**
  * Responsible for adding Bookmarks specific links to Members.
  */
 class BookmarksMemberExtension extends DataExtension
 {
-    /**
-     * @var array
-     */
     private static $has_many = [
         'Bookmarks' => BookmarkLink::class,
     ];
 
-    /**
-     * @var array
-     */
     private static $has_one = [
         'Member' => Member::class,
     ];
-
 
     /**
      * Get bookmarks and split into their respective top level pages
@@ -96,7 +89,7 @@ class BookmarksMemberExtension extends DataExtension
                  */
                 $bookmarks[$key]['Bookmarks']->push(new ArrayData([
                     'Title' => $siteTree->Title,
-                    'Link'  => $siteTree->Link()
+                    'Link'  => $siteTree->Link(),
                 ]));
             }
         }
@@ -129,7 +122,7 @@ class BookmarksMemberExtension extends DataExtension
 
                 $bookmarks[$key]['Bookmarks']->push(new ArrayData([
                     'Title' => $link->Title,
-                    'Link'  => $link->URL
+                    'Link'  => $link->URL,
                 ]));
             }
         }

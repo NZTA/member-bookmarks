@@ -1,6 +1,6 @@
 <?php
 
-namespace NZTA\MemberBookmark\Tests;
+namespace NZTA\MemberBookmark\Test;
 
 use NZTA\MemberBookmark\Extensions\BookmarksMemberExtension;
 use NZTA\MemberBookmark\Extensions\BookmarksPageControllerExtension;
@@ -26,11 +26,11 @@ class MemberBookmarksTest extends SapphireTest
      */
     protected $requiredExtensions = [
         Member::class          => [
-            BookmarksMemberExtension::class
+            BookmarksMemberExtension::class,
         ],
         PageController::class => [
-            BookmarksPageControllerExtension::class
-        ]
+            BookmarksPageControllerExtension::class,
+        ],
     ];
 
     public function setUp(): void
@@ -122,12 +122,12 @@ class MemberBookmarksTest extends SapphireTest
         // Get the first bookmark under the parent/category for some assertions
         $firstBookmark = $firstCategory['Bookmarks']->first();
         $this->assertEquals('Page two', $firstBookmark->Title);
-        $this->assertEquals('/page-one/page-two/', $firstBookmark->Link);
+        $this->assertEquals('/page-one/page-two', $firstBookmark->Link);
 
         // Get the second bookmark under the parent/category for some assertions
         $secondBookmark = $firstCategory['Bookmarks'][1];
         $this->assertEquals('Page three', $secondBookmark->Title);
-        $this->assertEquals('/page-one/page-three/', $secondBookmark->Link);
+        $this->assertEquals('/page-one/page-three', $secondBookmark->Link);
 
 
         // Ensure top level bookmarks getting under same top level category/parent
@@ -136,7 +136,7 @@ class MemberBookmarksTest extends SapphireTest
         // Ensure the category/Parent Title and the bookmark Title same.
         $this->assertEquals('Page four', $secondCategory['Title']);
         $this->assertEquals('Page four', $secondCategory['Bookmarks']->first()->Title);
-        $this->assertEquals('/page-four/', $secondCategory['Bookmarks']->first()->Link);
+        $this->assertEquals('/page-four', $secondCategory['Bookmarks']->first()->Link);
     }
 
     public function testNonMembersCannotBookmark()
@@ -144,7 +144,7 @@ class MemberBookmarksTest extends SapphireTest
         // Ensure Sitetree page been added to bookmark list
         $page = $this->objFromFixture(Page::class, 'Page1');
         $postData = [
-            'ID' => $page->ID
+            'ID' => $page->ID,
         ];
 
         $controller = new PageController();
@@ -165,7 +165,7 @@ class MemberBookmarksTest extends SapphireTest
         // Ensure Sitetree page been added to bookmark list
         $page = $this->objFromFixture(Page::class, 'Page1');
         $postData = [
-            'ID' => $page->ID
+            'ID' => $page->ID,
         ];
 
         $controller = new PageController();
@@ -180,7 +180,7 @@ class MemberBookmarksTest extends SapphireTest
         // Ensure bookmark saved to database with under this $member
         $bookmark = BookmarkLink::get()->filter([
             'BookmarkMemberID' => $member->ID,
-            'SiteTreeID'       => $page->ID
+            'SiteTreeID'       => $page->ID,
         ])->first();
 
         // Asserts bookmark and data

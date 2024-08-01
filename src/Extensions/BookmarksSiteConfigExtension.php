@@ -2,22 +2,16 @@
 
 namespace NZTA\MemberBookmark\Extensions;
 
-use SilverStripe\ORM\DataExtension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\DataExtension;
 
 class BookmarksSiteConfigExtension extends DataExtension
 {
-    /**
-     * @var array
-     */
     private static $db = [
-        'GlobalBookmarksHeading' => 'Varchar(255)'
+        'GlobalBookmarksHeading' => 'Varchar(255)',
     ];
 
-    /**
-     * @param FieldList $fields
-     */
     public function updateCMSFields(FieldList $fields)
     {
         $globalBookmarksHeading = TextField::create(

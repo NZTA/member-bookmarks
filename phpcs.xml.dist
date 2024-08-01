@@ -1,12 +1,60 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ruleset name="SilverStripe">
-    <description>CodeSniffer ruleset for SilverStripe coding conventions.</description>
+<?xml version="1.0"?>
+<ruleset name="NZTA">
+    <description>Coding standards for SilverStripe based project</description>
+
+    <arg name="extensions" value="php" />
+    <arg value="p"/> <!-- Show progress -->
+    <arg name="colors"/>
+    <arg value="s"/> <!-- output sniff names on violation -->
+    <arg name="encoding" value="utf-8" />
+
+    <config name="installed_paths" value="./../../slevomat/coding-standard"/>
 
     <file>src</file>
     <file>tests</file>
 
-    <rule ref="PSR12" >
-        <!-- Methods designed for use in Templates usually start with a capital letter by convention -->
-        <exclude name="PSR1.Methods.CamelCapsMethodName" />
+    <!-- Don't sniff third party libraries -->
+    <exclude-pattern>./vendor/*</exclude-pattern>
+    <exclude-pattern>*/thirdparty/*</exclude-pattern>
+
+    <!-- Use PSR-12 as a base standard -->
+    <rule ref="PSR12">
+        <!-- Silverstripe convention intended for template getter methods to be in PascalCase -->
+        <!-- e.g. SiteTree::MetaTags() -->
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+    </rule>
+
+    <!-- catch a few "tidy code" elements not covered by PSR-12 -->
+    <!-- clean useless code -->
+    <rule ref="SlevomatCodingStandard.ControlStructures.UselessTernaryOperator" />
+    <rule ref="SlevomatCodingStandard.Exceptions.DeadCatch" />
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" type="bool" value="true"/>
+            <property name="ignoredAnnotationNames" type="array" value="@config"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias" />
+    <rule ref="SlevomatCodingStandard.PHP.UselessSemicolon" />
+    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable">
+        <properties>
+            <property name="ignoreUnusedValuesWhenOnlyKeysAreUsedInForeach" value="true" />
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Variables.UselessVariable" />
+    <!-- formatting & style rules -->
+    <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma" />
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousTraitNaming" />
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses" />
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+        <!-- it would be nice if this rule just read from composer.json... but it doesn't seem to. -->
+        <properties>
+            <property name="rootNamespaces" type="array">
+                <element key="src" value="NZTA\MemberBookmark" />
+                <element key="tests" value="NZTA\MemberBookmark\Test" />
+            </property>
+        </properties>
     </rule>
 </ruleset>

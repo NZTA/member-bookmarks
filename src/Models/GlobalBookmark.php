@@ -3,9 +3,8 @@
 namespace NZTA\MemberBookmark\Models;
 
 use Sheadawson\Linkable\Models\Link;
-use SilverStripe\Security\Group;
 use SilverStripe\Forms\ListboxField;
-use SilverStripe\Forms\FieldList;
+use SilverStripe\Security\Group;
 
 class GlobalBookmark extends Link
 {
