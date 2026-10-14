@@ -2,11 +2,11 @@
 
 namespace NZTA\MemberBookmark\Extensions;
 
+use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
-use SilverStripe\ORM\DataExtension;
 
-class BookmarksSiteConfigExtension extends DataExtension
+class BookmarksSiteConfigExtension extends Extension
 {
     private static $db = [
         'GlobalBookmarksHeading' => 'Varchar(255)',

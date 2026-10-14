@@ -10,12 +10,11 @@ use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Convert;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\ORM\DataList;
-use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
 
-class BookmarksPageControllerExtension extends DataExtension
+class BookmarksPageControllerExtension extends Extension
 {
     private static $allowed_actions = [
         'addremovebookmark',
@@ -31,7 +30,7 @@ class BookmarksPageControllerExtension extends DataExtension
      * Helper to get all the {@link GlobalBookmark}s that have been added to the CMS. Excludes any bookmarks that have
      * an ExcludeGroup that the current user is a part of.
      *
-     * @return DataList
+     * @return DataList<GlobalBookmark>
      */
     public function getGlobalBookmarks()
     {
@@ -54,7 +53,7 @@ class BookmarksPageControllerExtension extends DataExtension
 
                         // filter out this bookmark if user is in one of the excluded groups
                         if (count(array_intersect($excludedGroupIds, $memberGroupIds))) {
-                            $bookmarks = $bookmarks->exclude('ID', $bookmark->ID);
+                            $bookmarks = $bookmarks->exclude(['ID' => $bookmark->ID]);
                         }
                     }
                 }
@@ -71,7 +70,7 @@ class BookmarksPageControllerExtension extends DataExtension
      */
     public function IsBookmarked()
     {
-        $pageId = $this->owner->data()->ID;
+        $pageId = $this->getOwner()->data()->ID;
         $member = Security::getCurrentUser();
 
         if (!$member) {
@@ -98,26 +97,27 @@ class BookmarksPageControllerExtension extends DataExtension
     {
         // ensure this is an ajax reqeust
         if (!$request->isAjax()) {
-            return $this->owner->httpError(400);
+            return $this->getOwner()->httpError(400);
         }
 
-        $ID = (int)$request->postVar('ID');
+        $id = (int)$request->postVar('ID');
+        $member = null;
 
         try {
             $member = Security::getCurrentUser();
 
-            if (($ID > 0) && $member) {
+            if (($id > 0) && $member) {
                 // set default type
                 $type = 'SiteTree';
 
                 // Allow a custom method to define type of BookmarkLink to save based on $request data
-                if (method_exists($this->owner, 'getBookmarkType')) {
-                    $customType = $this->owner->getBookmarkType($request);
-                    $type = ($customType) ? $customType : $type;
+                if (method_exists($this->getOwner(), 'getBookmarkType')) {
+                    $customType = $this->getOwner()->getBookmarkType($request);
+                    $type = $customType ?: $type;
                 }
 
                 // get filters based on type
-                $filters = $this->getBookmarkFilterOptions($request, $type, $ID);
+                $filters = $this->getBookmarkFilterOptions($request, $type, $id);
 
                 if (count($filters) > 0) {
                     $memberID = $member->ID;
@@ -133,13 +133,13 @@ class BookmarksPageControllerExtension extends DataExtension
                     if ($bookmark) {
                         $bookmark->delete();
                     } else {
-                        $this->createBookmarkFromData($request, $type, $ID, $memberID);
+                        $this->createBookmarkFromData($request, $type, $id, $memberID);
                     }
                 } else {
                     throw new Exception('No filters found!');
                 }
 
-                return $this->successResponse(['PageID' => $ID]);
+                return $this->successResponse(['PageID' => $id]);
             }
         } catch (Exception $e) {
             $this->logger->log(
@@ -173,7 +173,7 @@ class BookmarksPageControllerExtension extends DataExtension
      */
     private function errorResponse($description = "")
     {
-        $response = $this->owner->getResponse();
+        $response = $this->getOwner()->getResponse();
         $response->setStatusCode(403);
         $response->addHeader('Content-Type', 'application/json');
         $response->setStatusDescription($description);
@@ -190,13 +190,13 @@ class BookmarksPageControllerExtension extends DataExtension
      */
     private function successResponse($data = [])
     {
-        $response = $this->owner->getResponse();
+        $response = $this->getOwner()->getResponse();
         $response->setStatusCode(200);
         $response->addHeader('Content-Type', 'application/json');
 
         // provide hook for custom data to be passed back if needed
-        if (method_exists($this->owner, 'updateBookmarkSuccessResponse')) {
-            $extraData = $this->owner->updateBookmarkSuccessResponse($data);
+        if (method_exists($this->getOwner(), 'updateBookmarkSuccessResponse')) {
+            $extraData = $this->getOwner()->updateBookmarkSuccessResponse($data);
 
             // add the extra data to the body of the response
             $response->setBody(json_encode($extraData));
@@ -208,45 +208,36 @@ class BookmarksPageControllerExtension extends DataExtension
     /**
      * @param HTTPRequest $request
      * @param string $type
-     * @param integer $ID
+     * @param int $id
      *
      * @return array
      */
-    private function getBookmarkFilterOptions(HTTPRequest $request, $type, $ID)
+    private function getBookmarkFilterOptions(HTTPRequest $request, $type, $id)
     {
         switch ($type) {
             case 'SiteTree':
-                $siteTreeExists = $this->getSiteTree($ID);
-                if ($siteTreeExists) {
-                    return [
-                        'SiteTreeID' => $ID,
-                    ];
-                }
-
-                return [];
-                break;
+                $siteTreeExists = $this->getSiteTree($id);
+                return ($siteTreeExists) ? ['SiteTreeID' => $id] : [];
             case 'URL':
                 return [
                     'URL' => Convert::raw2sql($request->getHeader('Referer')),
                 ];
-                break;
             default:
                 return [];
-                break;
         }
     }
 
     /**
      * @param HTTPRequest $request
      * @param string $type
-     * @param integer $ID
-     * @param integer $memberID
+     * @param int $id
+     * @param int $memberID
      *
      * @return void
      */
-    private function createBookmarkFromData(HTTPRequest $request, $type, $ID, $memberID)
+    private function createBookmarkFromData(HTTPRequest $request, $type, $id, $memberID)
     {
-        $bookmarkLink = new BookmarkLink();
+        $bookmarkLink = BookmarkLink::create();
 
         switch ($type) {
             case 'URL':
@@ -256,10 +247,10 @@ class BookmarksPageControllerExtension extends DataExtension
                 break;
             case 'SiteTree':
             default:
-                $siteTree = $this->getSiteTree($ID);
+                $siteTree = $this->getSiteTree($id);
                 if ($siteTree) {
                     $bookmarkLink->Title = $siteTree->Title;
-                    $bookmarkLink->SiteTreeID = $ID;
+                    $bookmarkLink->SiteTreeID = $id;
                 }
                 break;
         }
@@ -270,13 +261,13 @@ class BookmarksPageControllerExtension extends DataExtension
     }
 
     /**
-     * @param integer $ID
+     * @param int $id
      *
-     * @return DataObject
+     * @return SiteTree|null
      */
-    private function getSiteTree($ID)
+    private function getSiteTree($id)
     {
-        return SiteTree::get()->filter('ID', (int)$ID)->first();
+        return SiteTree::get()->byID($id);
     }
 
     /**
@@ -287,8 +278,9 @@ class BookmarksPageControllerExtension extends DataExtension
     private function getURLTitle($url)
     {
         $title = '';
-        if (method_exists($this->owner, 'updateURLTitle')) {
-            $title = $this->owner->updateURLTitle($url);
+        $owner = $this->getOwner();
+        if ($owner->hasMethod('updateURLTitle')) {
+            $title = $owner->updateURLTitle($url);
         }
 
         return $title;

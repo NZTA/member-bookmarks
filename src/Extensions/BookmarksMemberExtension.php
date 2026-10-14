@@ -4,15 +4,17 @@ namespace NZTA\MemberBookmark\Extensions;
 
 use NZTA\MemberBookmark\Models\BookmarkLink;
 use SilverStripe\CMS\Model\SiteTree;
-use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+use SilverStripe\Model\ArrayData;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\Security\Member;
-use SilverStripe\View\ArrayData;
 
 /**
  * Responsible for adding Bookmarks specific links to Members.
+ *
+ * @extends Extension<Member>
  */
-class BookmarksMemberExtension extends DataExtension
+class BookmarksMemberExtension extends Extension
 {
     private static $has_many = [
         'Bookmarks' => BookmarkLink::class,
@@ -31,33 +33,29 @@ class BookmarksMemberExtension extends DataExtension
     {
         $bookmarks = [];
 
-        $member = $this->owner;
+        $member = $this->getOwner();
 
         foreach ($member->Bookmarks() as $link) {
-            switch ($link->Type) {
-                case 'URL':
-                    $bookmarks = $this->appendUrlBookmark($link, $bookmarks);
-                    break;
-                case 'SiteTree':
-                default:
-                    $bookmarks = $this->appendSiteTreeBookmark($link, $bookmarks);
-            }
+            $bookmarks = match ($link->Type) {
+                'URL' => $this->appendUrlBookmark($link, $bookmarks),
+                default => $this->appendSiteTreeBookmark($link, $bookmarks),
+            };
         }
 
-        return new ArrayList(array_values($bookmarks));
+        return ArrayList::create(array_values($bookmarks));
     }
 
     /**
      * Get Link type = SiteTree bookmarks
      *
-     * @param \BookmarkLink $link
+     * @param BookmarkLink $link
      * @param array $bookmarks
      *
      * @return array
      */
     private function appendSiteTreeBookmark($link, $bookmarks)
     {
-        $siteTree = SiteTree::get()->filter('ID', $link->SiteTreeID)->first();
+        $siteTree = SiteTree::get()->filter(['ID' => $link->SiteTreeID])->first();
         $category = [];
 
         if ($siteTree) {
@@ -70,7 +68,7 @@ class BookmarksMemberExtension extends DataExtension
             }
 
             if ($category) {
-                $key = key($category);
+                $key = (string)key($category);
 
                 $bookmarks = $this->addCategoryToBookmarks($key, $bookmarks, $category);
 
@@ -87,7 +85,7 @@ class BookmarksMemberExtension extends DataExtension
                  *     ]
                  * ]
                  */
-                $bookmarks[$key]['Bookmarks']->push(new ArrayData([
+                $bookmarks[$key]['Bookmarks']->push(ArrayData::create([
                     'Title' => $siteTree->Title,
                     'Link'  => $siteTree->Link(),
                 ]));
@@ -100,7 +98,7 @@ class BookmarksMemberExtension extends DataExtension
     /**
      *  Get Link type = URL bookmarks
      *
-     * @param \BookmarkLink $link
+     * @param BookmarkLink $link
      * @param array $bookmarks
      *
      * @return array
@@ -110,21 +108,19 @@ class BookmarksMemberExtension extends DataExtension
         $url = parse_url($link->URL);
         if ($url !== false) {
             // Remove first and last '/' characters from url path
-            $paths = explode('/', trim($url['path'], '/'));
-            if ($paths) {
-                // Get the first part of a url as a title/key
-                // e.g https://test.org/abc/test-page
-                // use abc as a key and as a title for parent/category
-                $key = $paths[0];
-                $category[$key]['Title'] = $key;
+            $paths = explode('/', trim($url['path'] ?? '', '/'));
+            // Get the first part of a url as a title/key
+            // e.g https://test.org/abc/test-page
+            // use abc as a key and as a title for parent/category
+            $key = $paths[0];
+            $category[$key]['Title'] = $key;
 
-                $bookmarks = $this->addCategoryToBookmarks($key, $bookmarks, $category);
+            $bookmarks = $this->addCategoryToBookmarks($key, $bookmarks, $category);
 
-                $bookmarks[$key]['Bookmarks']->push(new ArrayData([
-                    'Title' => $link->Title,
-                    'Link'  => $link->URL,
-                ]));
-            }
+            $bookmarks[$key]['Bookmarks']->push(ArrayData::create([
+                'Title' => $link->Title,
+                'Link'  => $link->URL,
+            ]));
         }
 
         return $bookmarks;
@@ -144,11 +140,11 @@ class BookmarksMemberExtension extends DataExtension
         if (!array_key_exists($key, $bookmarks)) {
             $categoryData = $category[$key];
 
-            if ($this->owner->hasMethod('updateBookmarkURLCategoryTitle')) {
-                $categoryData = $this->owner->updateBookmarkURLCategoryTitle($category[$key]);
+            if ($this->getOwner()->hasMethod('updateBookmarkURLCategoryTitle')) {
+                $categoryData = $this->getOwner()->updateBookmarkURLCategoryTitle($category[$key]);
             }
             $bookmarks[$key] = $categoryData;
-            $bookmarks[$key]['Bookmarks'] = new ArrayList();
+            $bookmarks[$key]['Bookmarks'] = ArrayList::create();
         }
 
         return $bookmarks;
@@ -159,13 +155,14 @@ class BookmarksMemberExtension extends DataExtension
      *
      * @param SiteTree $siteTree
      *
-     * @return array|bool
+     * @return array
      */
     private function getTopLevelParent($siteTree)
     {
         $ancestry = $siteTree->getAncestors();
 
         if ($ancestry->exists()) {
+            /** @var SiteTree $topLevelParent */
             $topLevelParent = $ancestry->pop();
             $parentKey = $this->getParentSiteTreeKey($topLevelParent);
             return [$parentKey => ['Title' => $topLevelParent->Title]];
@@ -177,7 +174,7 @@ class BookmarksMemberExtension extends DataExtension
     /**
      * Generate the key for parent/category array in bookmarks
      *
-     * @param \SiteTree $siteTree
+     * @param SiteTree $siteTree
      *
      * @return string
      */

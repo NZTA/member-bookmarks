@@ -5,32 +5,25 @@ namespace NZTA\MemberBookmark\Test;
 use NZTA\MemberBookmark\Extensions\BookmarksMemberExtension;
 use NZTA\MemberBookmark\Extensions\BookmarksPageControllerExtension;
 use NZTA\MemberBookmark\Models\BookmarkLink;
+use NZTA\MemberBookmark\Models\GlobalBookmark;
+use Override;
 use Page;
 use PageController;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\Security\Member;
 use SilverStripe\Versioned\Versioned;
 
 class MemberBookmarksTest extends SapphireTest
 {
-    /**
-     * @var string
-     */
-    protected static $fixture_file = './MemberBookmarksTest.yml';
+    #[Override]
+    protected static $fixture_file = 'MemberBookmarksTest.yml';
 
-    /**
-     * @var array
-     */
     protected $requiredExtensions = [
-        Member::class          => [
-            BookmarksMemberExtension::class,
-        ],
-        PageController::class => [
-            BookmarksPageControllerExtension::class,
-        ],
+        Member::class => [BookmarksMemberExtension::class],
+        PageController::class => [BookmarksPageControllerExtension::class],
     ];
 
     public function setUp(): void
@@ -53,12 +46,13 @@ class MemberBookmarksTest extends SapphireTest
         $member = $this->objFromFixture(Member::class, 'Member1');
         $this->logInAs($member);
 
-        $bookmarks = Injector::inst()->get(BookmarksPageControllerExtension::class)->getGlobalBookmarks();
+        $bookmarks = new BookmarksPageControllerExtension()->getGlobalBookmarks();
 
         // Get global bookmarks for Member1 (Exclude Group 'Group one')
         $this->assertEquals(1, $bookmarks->count());
 
         // Get the first global bookmark for some assertions
+        /** @var GlobalBookmark $bookmarkFirst */
         $bookmarkFirst = $bookmarks->first();
 
         // Ensure we getting the correct bookmark details
@@ -92,7 +86,7 @@ class MemberBookmarksTest extends SapphireTest
 
     public function testNonMembersDoNotHaveBookmarks()
     {
-        $memberObject = new Member();
+        $memberObject = Member::create();
         $bookmarks = $memberObject->getMemberBookmarks();
 
         // Check user bookmarks count before logged in
@@ -148,7 +142,7 @@ class MemberBookmarksTest extends SapphireTest
         ];
 
         $controller = new PageController();
-        $request = new HTTPRequest('POST', 'addremovebookmark', '', $postData);
+        $request = new HTTPRequest('POST', 'addremovebookmark', [], $postData);
         $request->addHeader('X-Requested-With', 'XMLHttpRequest');
 
         $response = $controller->addremovebookmark($request);
@@ -169,7 +163,7 @@ class MemberBookmarksTest extends SapphireTest
         ];
 
         $controller = new PageController();
-        $request = new HTTPRequest('POST', 'addremovebookmark', '', $postData);
+        $request = new HTTPRequest('POST', 'addremovebookmark', [], $postData);
         $request->addHeader('X-Requested-With', 'XMLHttpRequest');
 
         $response = $controller->addremovebookmark($request);

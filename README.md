@@ -1,14 +1,16 @@
 # Member Bookmarks
 
-This is for Silverstripe 4.x.
+This is an add-on for Silverstripe CMS project
 Provides the ability to add global and user specific bookmarks.
 
 ## Features
 
- * Able to create global bookmarks.
- * Able to exclude group of people from each global bookmark.
- * Logged in members can bookmark any internal or external page.
+ * Logged in members can bookmark any internal or external page for themselves.
+ * Able to create global bookmarks - defined by admins for all users.
+   * Able to exclude members of selected groups from each global bookmark.
 
 ## Installation
 
-    composer require nzta/member-bookmarks
+```sh
+composer require nzta/member-bookmarks
+```

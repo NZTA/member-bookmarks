@@ -15,16 +15,12 @@ class GlobalBookmarkModelAdmin extends ModelAdmin
 
     private static string $menu_icon = 'nzta/member-bookmarks:icon/bookmark.svg';
 
-    /**
-     * @var array
-     */
     private static $managed_models = [
         GlobalBookmark::class,
     ];
 
     protected function getGridFieldConfig(): GridFieldConfig
     {
-        $config = parent::getGridFieldConfig();
-        return $config->addComponent(new GridFieldSortableRows('SortOrder'));
+        return parent::getGridFieldConfig()->addComponent(GridFieldSortableRows::create('SortOrder'));
     }
 }
